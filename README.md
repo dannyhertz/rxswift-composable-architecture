@@ -5,7 +5,7 @@
 [![CI](https://github.com/dannyhertz/rx-swift-composable-architecture/workflows/CI/badge.svg)](https://github.com/dannyhertz/rx-swift-composable-architecture/actions?query=workflow%3ACI)
 [![@pointfreeco](https://img.shields.io/badge/contact-@pointfreeco-5AA9E7.svg?style=flat)](https://twitter.com/pointfreeco)
 
-[Pointfreeco's](https://github.com/pointfreeco) [The Composable Architecture](https://github.com/pointfreeco/swift-composable-architecture) uses Apple's Combine framework as the basis of its `Effect` type. Unfortunately, Combine is only available on iOS 13 and macOS 10.15 and above. In order to be able to use it with earlier versions of the OSes, this fork has adapted The Composable Architecture to use [RxSwift](https://github.com/ReactiveX/RxSwift) as the basis for the `Effect` type. Much of this work was also inspired by the wonderful [ReactiveSwift port](https://github.com/trading-point/reactiveswift-composable-architecture) of this project as well.
+[Point-Free’s](https://github.com/pointfreeco) [The Composable Architecture](https://github.com/pointfreeco/swift-composable-architecture) uses Apple's Combine framework as the basis of its `Effect` type. Unfortunately, Combine is only available on iOS 13 and macOS 10.15 and above. In order to be able to use it with earlier versions of the OSes, this fork has adapted The Composable Architecture to use [RxSwift](https://github.com/ReactiveX/RxSwift) as the basis for the `Effect` type. Much of this work was also inspired by the wonderful [ReactiveSwift port](https://github.com/trading-point/reactiveswift-composable-architecture) of this project as well.
 
 ## RxSwift Caveats
 
