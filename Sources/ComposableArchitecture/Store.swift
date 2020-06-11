@@ -235,7 +235,7 @@ public struct StorePublisher<State>: ObservableType {
   public typealias Element = State
   public let upstream: Observable<State>
 
-  public func subscribe<Observer>(_ observer: Observer) -> Disposable where Observer : ObserverType, Self.Element == Observer.Element {
+  public func subscribe<Observer>(_ observer: Observer) -> Disposable where Observer : ObserverType, Element == Observer.Element {
     upstream.subscribe(observer)
   }
 
