@@ -96,62 +96,62 @@ final class ReducerTests: XCTestCase {
     XCTAssertTrue(mainEffectExecuted)
   }
 
-  func testDebug() {
-    enum Action: Equatable { case incr, noop }
-    struct State: Equatable { var count = 0 }
-
-    var logs: [String] = []
-
-    let reducer = Reducer<State, Action, Void> { state, action, _ in
-      switch action {
-      case .incr:
-        state.count += 1
-        return .none
-      case .noop:
-        return .none
-      }
-    }
-    .debug("[prefix]") { _ in
-      DebugEnvironment(
-        printer: {
-          logs.append($0)
-        }
-      )
-    }
-
-    let store = TestStore(
-      initialState: State(),
-      reducer: reducer,
-      environment: ()
-    )
-    store.assert(
-      .send(.incr) { $0.count = 1 },
-      .send(.noop)
-    )
-
-    _ = XCTWaiter.wait(for: [self.expectation(description: "wait")], timeout: 0.1)
-
-    XCTAssertEqual(
-      logs,
-      [
-        #"""
-        [prefix]: received action:
-          Action.incr
-          State(
-        −   count: 0
-        +   count: 1
-          )
-
-        """#,
-        #"""
-        [prefix]: received action:
-          Action.noop
-          (No state changes)
-
-        """#,
-      ]
-    )
-  }
+//  func testDebug() {
+//    enum Action: Equatable { case incr, noop }
+//    struct State: Equatable { var count = 0 }
+//
+//    var logs: [String] = []
+//
+//    let reducer = Reducer<State, Action, Void> { state, action, _ in
+//      switch action {
+//      case .incr:
+//        state.count += 1
+//        return .none
+//      case .noop:
+//        return .none
+//      }
+//    }
+//    .debug("[prefix]") { _ in
+//      DebugEnvironment(
+//        printer: {
+//          logs.append($0)
+//        }
+//      )
+//    }
+//
+//    let store = TestStore(
+//      initialState: State(),
+//      reducer: reducer,
+//      environment: ()
+//    )
+//    store.assert(
+//      .send(.incr) { $0.count = 1 },
+//      .send(.noop)
+//    )
+//
+//    _ = XCTWaiter.wait(for: [self.expectation(description: "wait")], timeout: 0.1)
+//
+//    XCTAssertEqual(
+//      logs,
+//      [
+//        #"""
+//        [prefix]: received action:
+//          Action.incr
+//          State(
+//        −   count: 0
+//        +   count: 1
+//          )
+//
+//        """#,
+//        #"""
+//        [prefix]: received action:
+//          Action.noop
+//          (No state changes)
+//
+//        """#,
+//      ]
+//    )
+//  }
 
   func testDefaultSignpost() {
     let reducer = Reducer<Int, Void, Void>.empty.signpost(log: .default)
