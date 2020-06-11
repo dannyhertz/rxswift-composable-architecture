@@ -1,9 +1,23 @@
-# The Composable Architecture
+# A RxSwift fork of The Composable Architecture
 
 [![Swift 5.2](https://img.shields.io/badge/swift-5.2-ED523F.svg?style=flat)](https://swift.org/download/)
 [![Swift 5.1](https://img.shields.io/badge/swift-5.1-ED523F.svg?style=flat)](https://swift.org/download/)
-[![CI](https://github.com/pointfreeco/swift-composable-architecture/workflows/CI/badge.svg)](https://github.com/pointfreeco/swift-composable-architecture/actions?query=workflow%3ACI)
+[![CI](https://github.com/dannyhertz/rx-swift-composable-architecture/workflows/CI/badge.svg)](https://github.com/dannyhertz/rx-swift-composable-architecture/actions?query=workflow%3ACI)
 [![@pointfreeco](https://img.shields.io/badge/contact-@pointfreeco-5AA9E7.svg?style=flat)](https://twitter.com/pointfreeco)
+
+[Point-Free’s](https://github.com/pointfreeco) [The Composable Architecture](https://github.com/pointfreeco/swift-composable-architecture) uses Apple's Combine framework as the basis of its `Effect` type. Unfortunately, Combine is only available on iOS 13 and macOS 10.15 and above. In order to be able to use it with earlier versions of the OSes, this fork has adapted The Composable Architecture to use [RxSwift](https://github.com/ReactiveX/RxSwift) as the basis for the `Effect` type. Much of this work was also inspired by the wonderful [ReactiveSwift port](https://github.com/trading-point/reactiveswift-composable-architecture) of this project as well.
+
+## RxSwift Caveats
+
+Do to the lack of typed errors in RxSwift (which are heavily relied upon in ReactiveSwift and Combine) we lose some safety in this port, and it is on the consumer to take extra precautions to ensure an error never makes its way into the `Store`. One way to achieve this is with the [Materialize](https://github.com/ReactiveX/RxSwift/blob/master/RxSwift/Observables/Materialize.swift) operator or several other [popular error handling techniques](http://dukhovich.net/rxswift/error-handling/). An `assertionFailure` has been added to the `Store` class in order to prevent errors from unintentionally propagating further. An `_XCTFail` has also been added to the `TestStore` to ensure errors thrown during testing are caught early on as well.
+
+## TODOs
+
+* Port over Example apps from The Composable Architecture repository. 
+* Add more documentation to TestScheduler helper methods.
+* You tell me!
+
+# The Composable Architecture
 
 The Composable Architecture is a library for building applications in a consistent and understandable way, with composition, testing, and ergonomics in mind. It can be used in SwiftUI, UIKit, and more, and on any Apple platform (iOS, macOS, tvOS, and watchOS).
 
@@ -383,7 +397,7 @@ If you are interested in contributing a wrapper library for a framework that we 
 
     1. If done simply with `DispatchQueue.main.async` you will incur a thread hop even when you are already on the main thread. This can lead to unexpected behavior in UIKit and SwiftUI, where sometimes you are required to do work synchronously, such as in animation blocks.
 
-    2. It is possible to create a scheduler that performs its work immediately when on the main thread and otherwise uses `DispatchQueue.main.async` (_e.g._ see ReactiveSwift's [`UIScheduler`](https://github.com/ReactiveCocoa/ReactiveSwift/blob/f97db218c0236b0c6ef74d32adb3d578792969c0/Sources/Scheduler.swift)). This introduces a lot more complexity, and should probably not be adopted without having a very good reason.
+    2. It is possible to create a scheduler that performs its work immediately when on the main thread and otherwise uses `DispatchQueue.main.async` (_e.g._ see RxSwift's [`MainScheduler`](https://github.com/ReactiveX/RxSwift/blob/master/RxSwift/Schedulers/MainScheduler.swift)). This introduces a lot more complexity, and should probably not be adopted without having a very good reason.
 
     At the end of the day, we require `Store` to be used in much the same way that you interact with Apple's APIs. Just as `URLSession` delivers its results on a background thread, thus making you responsible for dispatching back to the main thread, the Composable Architecture makes you responsible for making sure to send actions on the main thread. If you are using an effect that may deliver its output on a non-main thread, you must explicitly perform `.receive(on:)` in order to force it back on the main thread.
 
@@ -408,7 +422,7 @@ If you are interested in contributing a wrapper library for a framework that we 
   
 ## Requirements
 
-The Composable Architecture depends on the Combine framework, so it requires minimum deployment targets of iOS 13, macOS 10.15, Mac Catalyst 13, tvOS 13, and watchOS 6. If your application must support older OSes, there is [a ReactiveSwift fork](https://github.com/trading-point/reactiveswift-composable-architecture) that you can adopt!
+The Composable Architecture depends on the Combine framework, so it requires minimum deployment targets of iOS 13, macOS 10.15, Mac Catalyst 13, tvOS 13, and watchOS 6. If your application must support older OSes, there is [a RxSwift fork](https://github.com/dannyhertz/rx-swift-composable-architecture) that you can adopt!
 
 ## Installation
 
