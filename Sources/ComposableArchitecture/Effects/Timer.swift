@@ -1,5 +1,5 @@
-import RxSwift
 import Foundation
+import RxSwift
 
 extension Effect where Output: RxAbstractInteger {
   /// Returns an effect that repeatedly emits the current time of the given
@@ -31,11 +31,12 @@ extension Effect where Output: RxAbstractInteger {
     id: AnyHashable,
     every interval: RxTimeInterval,
     on scheduler: SchedulerType
-  ) -> Effect  {
+  ) -> Effect {
 
-    return Observable
-    .interval(interval, scheduler: scheduler)
-    .eraseToEffect()
-    .cancellable(id: id)
+    return
+      Observable
+      .interval(interval, scheduler: scheduler)
+      .eraseToEffect()
+      .cancellable(id: id)
   }
 }

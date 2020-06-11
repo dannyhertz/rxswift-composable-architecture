@@ -45,7 +45,8 @@ extension Store {
   ) -> Disposable where State == Wrapped? {
     self.scope(
       state: { state in
-        return state
+        return
+          state
           .distinctUntilChanged({ ($0 != nil) == ($1 != nil) })
           .do(onNext: { if $0 == nil { `else`() } })
           .compactMap { $0 }

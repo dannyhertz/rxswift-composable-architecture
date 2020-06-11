@@ -1,5 +1,5 @@
-import RxSwift
 import Foundation
+import RxSwift
 
 /// The `Effect` type encapsulates a unit of work that can be run in the outside world, and can feed
 /// data back to the `Store`. It is the perfect place to do side effects, such as network requests,
@@ -40,7 +40,7 @@ public struct Effect<Output>: ObservableType {
   }
 
   public func subscribe<Observer>(
-      _ observer: Observer
+    _ observer: Observer
   ) -> Disposable where Observer: ObserverType, Element == Observer.Element {
     upstream.subscribe(observer)
   }
@@ -243,10 +243,11 @@ public struct Effect<Output>: ObservableType {
   /// - Parameter work: A closure encapsulating some work to execute in the real world.
   /// - Returns: An effect.
   public static func fireAndForget(_ work: @escaping () -> Void) -> Effect {
-    return Effect(Observable.deferred {
-      work()
-      return Observable<Output>.empty()
-    })
+    return Effect(
+      Observable.deferred {
+        work()
+        return Observable<Output>.empty()
+      })
   }
 
   /// Transforms all elements from the upstream effect with a provided closure.

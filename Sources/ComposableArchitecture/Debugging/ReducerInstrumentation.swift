@@ -64,22 +64,22 @@ extension ObservableType {
 
     return
       self
-        .do(
-          onNext: { _ in
-            os_signpost(
-              .event, log: log, name: "Effect Output", "%sOutput from %s", prefix, actionOutput)
-          },
-          onCompleted: {
-            os_signpost(.end, log: log, name: "Effect", signpostID: sid, "%sFinished", prefix)
-          },
-          onSubscribe: {
-            os_signpost(
-              .begin, log: log, name: "Effect", signpostID: sid, "%sStarted from %s", prefix,
-              actionOutput)
-          },
-          onDispose: {
-            os_signpost(.end, log: log, name: "Effect", signpostID: sid, "%sCancelled", prefix)
-          }
+      .do(
+        onNext: { _ in
+          os_signpost(
+            .event, log: log, name: "Effect Output", "%sOutput from %s", prefix, actionOutput)
+        },
+        onCompleted: {
+          os_signpost(.end, log: log, name: "Effect", signpostID: sid, "%sFinished", prefix)
+        },
+        onSubscribe: {
+          os_signpost(
+            .begin, log: log, name: "Effect", signpostID: sid, "%sStarted from %s", prefix,
+            actionOutput)
+        },
+        onDispose: {
+          os_signpost(.end, log: log, name: "Effect", signpostID: sid, "%sCancelled", prefix)
+        }
       )
   }
 }

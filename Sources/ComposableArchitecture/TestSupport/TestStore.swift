@@ -174,31 +174,31 @@
       var effectDisposables = CompositeDisposable()
 
       func runReducer(action: Action) {
-          let effect = reducer.callAsFunction(&self.state, action, self.environment)
+        let effect = reducer.callAsFunction(&self.state, action, self.environment)
 
-          var effectDisposable: Disposable?
-          var effectDisposableKey: CompositeDisposable.DisposeKey?
-          var isComplete = false
+        var effectDisposable: Disposable?
+        var effectDisposableKey: CompositeDisposable.DisposeKey?
+        var isComplete = false
 
-          let cleanupDisposables = {
-              isComplete = true
-              guard let effectDisposableKey = effectDisposableKey else { return }
-              effectDisposables.remove(for: effectDisposableKey)
-          }
+        let cleanupDisposables = {
+          isComplete = true
+          guard let effectDisposableKey = effectDisposableKey else { return }
+          effectDisposables.remove(for: effectDisposableKey)
+        }
 
-          effectDisposable = effect.subscribe(
-              onNext: { receivedActions.append($0) },
-              onError: { err in
-                _XCTFail("Error during effect handling: \(err.localizedDescription)")
-                cleanupDisposables()
-              },
-              onCompleted: cleanupDisposables,
-              onDisposed: nil
-          )
+        effectDisposable = effect.subscribe(
+          onNext: { receivedActions.append($0) },
+          onError: { err in
+            _XCTFail("Error during effect handling: \(err.localizedDescription)")
+            cleanupDisposables()
+          },
+          onCompleted: cleanupDisposables,
+          onDisposed: nil
+        )
 
-          if !isComplete, let effectDisposable = effectDisposable {
-              effectDisposableKey = effectDisposables.insert(effectDisposable)
-          }
+        if !isComplete, let effectDisposable = effectDisposable {
+          effectDisposableKey = effectDisposables.insert(effectDisposable)
+        }
       }
 
       for step in steps {

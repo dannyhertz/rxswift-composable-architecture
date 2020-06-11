@@ -72,11 +72,11 @@ public final class ViewStore<State, Action> {
   /// The current state.
   private var stateRelay: BehaviorRelay<State>
   public private(set) var state: State {
-      get { return stateRelay.value }
-      set { stateRelay.accept(newValue) }
+    get { return stateRelay.value }
+    set { stateRelay.accept(newValue) }
   }
   var observable: Observable<State> {
-      return stateRelay.asObservable()
+    return stateRelay.asObservable()
   }
 
   let _send: (Action) -> Void

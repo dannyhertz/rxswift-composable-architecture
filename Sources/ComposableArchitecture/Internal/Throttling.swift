@@ -27,7 +27,10 @@ extension Effect {
         return Observable.just(value)
       }
 
-      guard scheduler.now.timeIntervalSince1970 - throttleTime.timeIntervalSince1970 < interval.timeInterval else {
+      guard
+        scheduler.now.timeIntervalSince1970 - throttleTime.timeIntervalSince1970
+          < interval.timeInterval
+      else {
         throttleTimes[id] = scheduler.now
         throttleValues[id] = nil
         return Observable.just(value)
@@ -37,7 +40,10 @@ extension Effect {
       throttleValues[id] = value
 
       return Observable.just(value)
-        .delay(.seconds(throttleTime.addingTimeInterval(interval.timeInterval).timeIntervalSince1970 - scheduler.now.timeIntervalSince1970), scheduler: scheduler)
+        .delay(
+          .seconds(
+            throttleTime.addingTimeInterval(interval.timeInterval).timeIntervalSince1970
+              - scheduler.now.timeIntervalSince1970), scheduler: scheduler)
     }
     .eraseToEffect()
     .cancellable(id: id, cancelInFlight: true)
@@ -70,4 +76,3 @@ extension DispatchTimeInterval {
     return DispatchTimeInterval.nanoseconds(Int(delay))
   }
 }
-

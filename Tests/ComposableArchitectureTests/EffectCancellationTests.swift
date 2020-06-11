@@ -205,7 +205,7 @@ final class EffectCancellationTests: XCTestCase {
         return Effect.merge(
           Observable.just(idx)
             .delay(
-                .milliseconds(Int.random(in: 1...100)), scheduler: queues.randomElement()!
+              .milliseconds(Int.random(in: 1...100)), scheduler: queues.randomElement()!
             )
             .eraseToEffect()
             .cancellable(id: id),

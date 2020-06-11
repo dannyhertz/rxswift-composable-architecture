@@ -18,8 +18,8 @@ final class MemoryManagementTests: XCTestCase {
 
     var count = 0
     viewStore.publisher
-        .subscribe(onNext: { count = $0 })
-        .disposed(by: disposeBag)
+      .subscribe(onNext: { count = $0 })
+      .disposed(by: disposeBag)
 
     XCTAssertEqual(count, 0)
     viewStore.send(())
@@ -35,8 +35,8 @@ final class MemoryManagementTests: XCTestCase {
 
     var count = 0
     viewStore.publisher
-        .subscribe(onNext: { count = $0 })
-        .disposed(by: disposeBag)
+      .subscribe(onNext: { count = $0 })
+      .disposed(by: disposeBag)
 
     XCTAssertEqual(count, 0)
     viewStore.send(())

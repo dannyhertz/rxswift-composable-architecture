@@ -1,7 +1,7 @@
 import ComposableArchitecture
-import XCTest
 import RxSwift
 import RxTest
+import XCTest
 
 final class ComposableArchitectureTests: XCTestCase {
   var disposeBag = DisposeBag()

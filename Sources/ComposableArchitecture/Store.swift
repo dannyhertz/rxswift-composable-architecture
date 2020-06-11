@@ -17,18 +17,17 @@ public final class Store<State, Action> {
 
   private var stateRelay: BehaviorRelay<State>
   public private(set) var state: State {
-      get { return stateRelay.value }
-      set { stateRelay.accept(newValue) }
+    get { return stateRelay.value }
+    set { stateRelay.accept(newValue) }
   }
   var observable: Observable<State> {
-      return stateRelay.asObservable()
+    return stateRelay.asObservable()
   }
 
   deinit {
-      parentDisposable?.dispose()
-      effectDisposables.dispose()
+    parentDisposable?.dispose()
+    effectDisposables.dispose()
   }
-
 
   /// Initializes a store from an initial state, a reducer, and an environment.
   ///
@@ -84,7 +83,8 @@ public final class Store<State, Action> {
       }
     )
     localStore.parentDisposable = self.observable
-      .subscribe(onNext: { [weak localStore] newValue in localStore?.state = toLocalState(newValue) })
+      .subscribe(onNext: { [weak localStore] newValue in localStore?.state = toLocalState(newValue)
+        })
     return localStore
   }
 
@@ -190,7 +190,7 @@ public final class Store<State, Action> {
           }
         },
         onError: { err in
-            assertionFailure("Error during effect handling: \(err.localizedDescription)")
+          assertionFailure("Error during effect handling: \(err.localizedDescription)")
         },
         onCompleted: { [weak self] in
           didComplete = true
@@ -235,7 +235,8 @@ public struct StorePublisher<State>: ObservableType {
   public typealias Element = State
   public let upstream: Observable<State>
 
-  public func subscribe<Observer>(_ observer: Observer) -> Disposable where Observer : ObserverType, Element == Observer.Element {
+  public func subscribe<Observer>(_ observer: Observer) -> Disposable
+  where Observer: ObserverType, Element == Observer.Element {
     upstream.subscribe(observer)
   }
 

@@ -12,9 +12,9 @@ final class EffectTests: XCTestCase {
     var values: [Int] = []
 
     let effect = Effect<Int>.concatenate(
-        Effect(value: 1).delay(.seconds(1), scheduler: scheduler).eraseToEffect(),
-        Effect(value: 2).delay(.seconds(2), scheduler: scheduler).eraseToEffect(),
-        Effect(value: 3).delay(.seconds(3), scheduler: scheduler).eraseToEffect()
+      Effect(value: 1).delay(.seconds(1), scheduler: scheduler).eraseToEffect(),
+      Effect(value: 2).delay(.seconds(2), scheduler: scheduler).eraseToEffect(),
+      Effect(value: 3).delay(.seconds(3), scheduler: scheduler).eraseToEffect()
     )
 
     effect
@@ -40,7 +40,7 @@ final class EffectTests: XCTestCase {
     var values: [Int] = []
 
     let effect = Effect<Int>.concatenate(
-        Effect(value: 1).delay(.seconds(1), scheduler: scheduler).eraseToEffect()
+      Effect(value: 1).delay(.seconds(1), scheduler: scheduler).eraseToEffect()
     )
 
     effect
@@ -58,9 +58,9 @@ final class EffectTests: XCTestCase {
 
   func testMerge() {
     let effect = Effect<Int>.merge(
-        Effect(value: 1).delay(.seconds(1), scheduler: scheduler).eraseToEffect(),
-        Effect(value: 2).delay(.seconds(2), scheduler: scheduler).eraseToEffect(),
-        Effect(value: 3).delay(.seconds(3), scheduler: scheduler).eraseToEffect()
+      Effect(value: 1).delay(.seconds(1), scheduler: scheduler).eraseToEffect(),
+      Effect(value: 2).delay(.seconds(2), scheduler: scheduler).eraseToEffect(),
+      Effect(value: 3).delay(.seconds(3), scheduler: scheduler).eraseToEffect()
     )
 
     var values: [Int] = []
@@ -104,8 +104,8 @@ final class EffectTests: XCTestCase {
     var values: [Int] = []
     var isComplete = false
     effect
-        .subscribe(onNext: { values.append($0) }, onCompleted: { isComplete = true })
-        .disposed(by: disposeBag)
+      .subscribe(onNext: { values.append($0) }, onCompleted: { isComplete = true })
+      .disposed(by: disposeBag)
 
     XCTAssertEqual(values, [1, 2])
     XCTAssertEqual(isComplete, false)
@@ -140,8 +140,8 @@ final class EffectTests: XCTestCase {
     var values: [Int] = []
     var isComplete = false
     effect
-        .subscribe(onNext: { values.append($0) }, onCompleted: { isComplete = true })
-        .disposed(by: disposeBag)
+      .subscribe(onNext: { values.append($0) }, onCompleted: { isComplete = true })
+      .disposed(by: disposeBag)
 
     XCTAssertEqual(values, [1])
     XCTAssertEqual(isComplete, false)

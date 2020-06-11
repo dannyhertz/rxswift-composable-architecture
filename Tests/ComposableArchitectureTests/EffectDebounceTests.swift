@@ -1,7 +1,7 @@
 import ComposableArchitecture
-import XCTest
 import RxSwift
 import RxTest
+import XCTest
 
 final class EffectDebounceTests: XCTestCase {
   var disposeBag = DisposeBag()
@@ -12,7 +12,7 @@ final class EffectDebounceTests: XCTestCase {
 
     func runDebouncedEffect(value: Int) {
       struct CancelToken: Hashable {}
-        Observable.just(value)
+      Observable.just(value)
         .eraseToEffect()
         .debounce(id: CancelToken(), for: .seconds(1), scheduler: scheduler)
         .subscribe(onNext: { values.append($0) })
