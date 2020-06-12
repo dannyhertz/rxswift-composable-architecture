@@ -1,0 +1,114 @@
+import RxSwift
+import ComposableArchitecture
+import UIKit
+import RxCocoa
+
+struct EagerNavigationState: Equatable {
+  var isNavigationActive = false
+  var optionalCounter: CounterState?
+}
+
+enum EagerNavigationAction: Equatable {
+  case optionalCounter(CounterAction)
+  case setNavigation(isActive: Bool)
+  case setNavigationIsActiveDelayCompleted
+}
+
+struct EagerNavigationEnvironment {
+  var mainQueue: SchedulerType
+}
+
+let eagerNavigationReducer = counterReducer
+  .optional
+  .pullback(
+    state: \.optionalCounter,
+    action: /EagerNavigationAction.optionalCounter,
+    environment: { _ in CounterEnvironment() }
+  )
+  .combined(
+    with: Reducer<
+      EagerNavigationState, EagerNavigationAction, EagerNavigationEnvironment
+    > { state, action, environment in
+      switch action {
+      case .setNavigation(isActive: true):
+        state.isNavigationActive = true
+        return Effect(value: .setNavigationIsActiveDelayCompleted)
+            .delay(.seconds(1), scheduler: environment.mainQueue)
+          .eraseToEffect()
+      case .setNavigation(isActive: false):
+        state.isNavigationActive = false
+        state.optionalCounter = nil
+        return .none
+      case .setNavigationIsActiveDelayCompleted:
+        state.optionalCounter = CounterState()
+        return .none
+      case .optionalCounter:
+        return .none
+      }
+    }
+  )
+
+class EagerNavigationViewController: UIViewController {
+  var disposeBag = DisposeBag()
+  let store: Store<EagerNavigationState, EagerNavigationAction>
+  let viewStore: ViewStore<EagerNavigationState, EagerNavigationAction>
+
+  init(store: Store<EagerNavigationState, EagerNavigationAction>) {
+    self.store = store
+    self.viewStore = ViewStore(store)
+    super.init(nibName: nil, bundle: nil)
+  }
+
+  required init?(coder: NSCoder) {
+    fatalError("init(coder:) has not been implemented")
+  }
+
+  override func viewDidLoad() {
+    super.viewDidLoad()
+
+    self.title = "Navigate and load"
+
+    self.view.backgroundColor = .white
+
+    let button = UIButton(type: .system)
+    button.addTarget(self, action: #selector(loadOptionalCounterTapped), for: .touchUpInside)
+    button.setTitle("Load optional counter", for: .normal)
+    button.translatesAutoresizingMaskIntoConstraints = false
+    self.view.addSubview(button)
+
+    NSLayoutConstraint.activate([
+      button.centerXAnchor.constraint(equalTo: self.view.safeAreaLayoutGuide.centerXAnchor),
+      button.centerYAnchor.constraint(equalTo: self.view.safeAreaLayoutGuide.centerYAnchor),
+    ])
+
+    self.viewStore.publisher.isNavigationActive.subscribe(onNext: { [weak self] isNavigationActive in
+      guard let self = self else { return }
+      if isNavigationActive {
+        self.navigationController?.pushViewController(
+          IfLetStoreController(
+            store: self.store
+              .scope(state: { $0.optionalCounter }, action: EagerNavigationAction.optionalCounter),
+            then: CounterViewController.init(store:),
+            else: ActivityIndicatorViewController()
+          ),
+          animated: true
+        )
+      } else {
+        self.navigationController?.popToViewController(self, animated: true)
+      }
+    })
+    .disposed(by: disposeBag)
+  }
+
+  override func viewDidAppear(_ animated: Bool) {
+    super.viewDidAppear(animated)
+
+    if !self.isMovingToParent {
+      self.viewStore.send(.setNavigation(isActive: false))
+    }
+  }
+
+  @objc private func loadOptionalCounterTapped() {
+    self.viewStore.send(.setNavigation(isActive: true))
+  }
+}
