@@ -2,7 +2,7 @@
 
 [![Swift 5.2](https://img.shields.io/badge/swift-5.2-ED523F.svg?style=flat)](https://swift.org/download/)
 [![Swift 5.1](https://img.shields.io/badge/swift-5.1-ED523F.svg?style=flat)](https://swift.org/download/)
-[![CI](https://github.com/dannyhertz/rx-swift-composable-architecture/workflows/CI/badge.svg)](https://github.com/dannyhertz/rx-swift-composable-architecture/actions?query=workflow%3ACI)
+[![CI](https://github.com/dannyhertz/rxswift-composable-architecture/workflows/CI/badge.svg)](https://github.com/dannyhertz/rxswift-composable-architecture/actions?query=workflow%3ACI)
 [![@pointfreeco](https://img.shields.io/badge/contact-@pointfreeco-5AA9E7.svg?style=flat)](https://twitter.com/pointfreeco)
 
 [Point-Free’s](https://github.com/pointfreeco) [The Composable Architecture](https://github.com/pointfreeco/swift-composable-architecture) uses Apple's Combine framework as the basis of its `Effect` type. Unfortunately, Combine is only available on iOS 13 and macOS 10.15 and above. In order to be able to use it with earlier versions of the OSes, this fork has adapted The Composable Architecture to use [RxSwift](https://github.com/ReactiveX/RxSwift) as the basis for the `Effect` type. Much of this work was also inspired by the wonderful [ReactiveSwift port](https://github.com/trading-point/reactiveswift-composable-architecture) of this project as well.
@@ -424,7 +424,7 @@ If you are interested in contributing a wrapper library for a framework that we 
   
 ## Requirements
 
-The Composable Architecture depends on the Combine framework, so it requires minimum deployment targets of iOS 13, macOS 10.15, Mac Catalyst 13, tvOS 13, and watchOS 6. If your application must support older OSes, there is [a RxSwift fork](https://github.com/dannyhertz/rx-swift-composable-architecture) that you can adopt!
+The Composable Architecture depends on the Combine framework, so it requires minimum deployment targets of iOS 13, macOS 10.15, Mac Catalyst 13, tvOS 13, and watchOS 6. If your application must support older OSes, there is [a RxSwift fork](https://github.com/dannyhertz/rxswift-composable-architecture) that you can adopt!
 
 ## Installation
 

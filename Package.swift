@@ -3,7 +3,7 @@
 import PackageDescription
 
 let package = Package(
-  name: "rx-swift-composable-architecture",
+  name: "rxswift-composable-architecture",
   platforms: [
     .iOS(.v12),
     .macOS(.v10_15),
