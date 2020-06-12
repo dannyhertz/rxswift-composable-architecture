@@ -24,7 +24,7 @@ let package = Package(
     .target(
       name: "ComposableArchitecture",
       dependencies: [
-        "CasePaths", "RxSwift", "RxRelay"
+        "CasePaths", "RxSwift", "RxRelay",
       ]
     ),
     .testTarget(
