@@ -14,10 +14,10 @@
             buildForAnalyzing = "YES">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "ComposableCoreLocation"
-               BuildableName = "ComposableCoreLocation"
-               BlueprintName = "ComposableCoreLocation"
-               ReferencedContainer = "container:">
+               BlueprintIdentifier = "DC4C6EA62450DD380066A05D"
+               BuildableName = "UIKitCaseStudies.app"
+               BlueprintName = "UIKitCaseStudies"
+               ReferencedContainer = "container:CaseStudies.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
       </BuildActionEntries>
@@ -32,10 +32,10 @@
             skipped = "NO">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "ComposableCoreLocationTests"
-               BuildableName = "ComposableCoreLocationTests"
-               BlueprintName = "ComposableCoreLocationTests"
-               ReferencedContainer = "container:">
+               BlueprintIdentifier = "DC4C6EBB2450DD390066A05D"
+               BuildableName = "UIKitCaseStudiesTests.xctest"
+               BlueprintName = "UIKitCaseStudiesTests"
+               ReferencedContainer = "container:CaseStudies.xcodeproj">
             </BuildableReference>
          </TestableReference>
       </Testables>
@@ -50,6 +50,16 @@
       debugDocumentVersioning = "YES"
       debugServiceExtension = "internal"
       allowLocationSimulation = "YES">
+      <BuildableProductRunnable
+         runnableDebuggingMode = "0">
+         <BuildableReference
+            BuildableIdentifier = "primary"
+            BlueprintIdentifier = "DC4C6EA62450DD380066A05D"
+            BuildableName = "UIKitCaseStudies.app"
+            BlueprintName = "UIKitCaseStudies"
+            ReferencedContainer = "container:CaseStudies.xcodeproj">
+         </BuildableReference>
+      </BuildableProductRunnable>
    </LaunchAction>
    <ProfileAction
       buildConfiguration = "Release"
@@ -57,15 +67,16 @@
       savedToolIdentifier = ""
       useCustomWorkingDirectory = "NO"
       debugDocumentVersioning = "YES">
-      <MacroExpansion>
+      <BuildableProductRunnable
+         runnableDebuggingMode = "0">
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "ComposableCoreLocation"
-            BuildableName = "ComposableCoreLocation"
-            BlueprintName = "ComposableCoreLocation"
-            ReferencedContainer = "container:">
+            BlueprintIdentifier = "DC4C6EA62450DD380066A05D"
+            BuildableName = "UIKitCaseStudies.app"
+            BlueprintName = "UIKitCaseStudies"
+            ReferencedContainer = "container:CaseStudies.xcodeproj">
          </BuildableReference>
-      </MacroExpansion>
+      </BuildableProductRunnable>
    </ProfileAction>
    <AnalyzeAction
       buildConfiguration = "Debug">
