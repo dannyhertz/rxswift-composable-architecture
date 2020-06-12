@@ -15,6 +15,8 @@ Do to the lack of typed errors in RxSwift (which are heavily relied upon in Reac
 
 * Port over Example apps from The Composable Architecture repository. 
 * Add more documentation to TestScheduler helper methods.
+* Find a way to expose `TestStore` and `TestScheduler` via separate `ComposableArchitectureTestSupport` library once [SPM issue](https://bugs.swift.org/browse/SR-12303) is resolved.
+* Add CocoaPods support.
 * You tell me!
 
 # The Composable Architecture

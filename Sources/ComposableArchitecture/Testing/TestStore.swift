@@ -1,9 +1,6 @@
 #if DEBUG
-  import ComposableArchitecture
   import RxSwift
   import Foundation
-
-  @testable import ComposableArchitecture
 
   /// A testable runtime for a reducer.
   ///
