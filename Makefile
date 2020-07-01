@@ -15,13 +15,13 @@ test-swift:
 test-workspace:
 	xcodebuild test \
 		-scheme ComposableArchitecture \
-		-destination platform="$(PLATFORM_IOS)" \
+		-destination platform="$(PLATFORM_IOS)"
 	xcodebuild test \
 		-scheme ComposableArchitecture \
-		-destination platform="$(PLATFORM_MACOS)" \
+		-destination platform="$(PLATFORM_MACOS)"
 	xcodebuild test \
 		-scheme ComposableArchitecture \
-		-destination platform="$(PLATFORM_TVOS)" \
+		-destination platform="$(PLATFORM_TVOS)"
 
 format:
 	swift format --in-place --recursive ./Package.swift ./Sources ./Tests
