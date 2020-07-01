@@ -16,15 +16,12 @@ test-workspace:
 	xcodebuild test \
 		-scheme ComposableArchitecture \
 		-destination platform="$(PLATFORM_IOS)" \
-		-quiet
 	xcodebuild test \
 		-scheme ComposableArchitecture \
 		-destination platform="$(PLATFORM_MACOS)" \
-		-quiet
 	xcodebuild test \
 		-scheme ComposableArchitecture \
 		-destination platform="$(PLATFORM_TVOS)" \
-		-quiet
 
 format:
 	swift format --in-place --recursive ./Package.swift ./Sources ./Tests
