@@ -182,7 +182,7 @@ extension AlertState.Button {
     }
 }
 
-public extension AlertState {
+extension AlertState {
     func toUIKit(send: @escaping (Action) -> Void) -> UIAlertController {
         let alert =  UIAlertController(title: title, message: message, preferredStyle: .alert)
 
@@ -194,5 +194,11 @@ public extension AlertState {
         }
 
         return alert
+    }
+}
+
+public extension UIAlertController {
+    static func alert<Action>(_ alert: AlertState<Action>, send: @escaping (Action) -> Void) -> UIAlertController {
+        return alert.toUIKit(send: send)
     }
 }
