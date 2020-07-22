@@ -436,6 +436,13 @@ You can add ComposableArchitecture to an Xcode project by adding it as a package
       - If you have a single application target that needs access to the library, then add **ComposableArchitecture** directly to your application.
       - If you want to use this library from multiple targets you must create a shared framework that depends on **ComposableArchitecture** and then depend on that framework in all of your targets. For an example of this, check out the [Tic-Tac-Toe](./Examples/TicTacToe) demo application, which splits lots of features into modules and consumes the static library in this fashion using the **TicTacToeCommon** framework.
 
+### Cocoapods
+
+You will need to add this to your Podfile:
+```
+pod 'ComposableArchitecture', :git => 'git@github.com:dannyhertz/rxswift-composable-architecture.git'
+```
+
 ## Help
 
 If you want to discuss the Composable Architecture or have a question about how to use it to solve a particular problem, ask around on [its Swift forum](https://forums.swift.org/c/related-projects/swift-composable-architecture).
