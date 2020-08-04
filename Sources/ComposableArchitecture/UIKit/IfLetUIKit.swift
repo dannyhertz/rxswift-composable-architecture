@@ -44,7 +44,8 @@ extension Store {
     else: @escaping () -> Void
   ) -> Disposable where State == Wrapped? {
 
-    let elseDisposable = self
+    let elseDisposable =
+      self
       .scope(
         state: { state in
           state.distinctUntilChanged({ ($0 != nil) == ($1 != nil) })
@@ -54,7 +55,8 @@ extension Store {
         if store.state == nil { `else`() }
       })
 
-    let unwrapDisposable = self
+    let unwrapDisposable =
+      self
       .scope(
         state: { state in
           state.distinctUntilChanged({ ($0 != nil) == ($1 != nil) })

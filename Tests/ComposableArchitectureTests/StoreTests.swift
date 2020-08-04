@@ -235,119 +235,120 @@ final class StoreTests: XCTestCase {
     XCTAssertEqual(ViewStore(store).state, 100_000)
   }
 
-    func testPublisherScope() {
-      let appReducer = Reducer<Int, Bool, Void> { state, action, _ in
-        state += action ? 1 : 0
-        return .none
-      }
-
-      let parentStore = Store(initialState: 0, reducer: appReducer, environment: ())
-
-      var outputs: [Int] = []
-
-      parentStore
-        .scope { $0.distinctUntilChanged() }
-        .subscribe(onNext: {
-            outputs.append($0.state)
-        })
-        .disposed(by: disposeBag)
-
-      XCTAssertEqual(outputs, [0])
-
-      parentStore.send(true)
-      XCTAssertEqual(outputs, [0, 1])
-
-      parentStore.send(false)
-      XCTAssertEqual(outputs, [0, 1])
-      parentStore.send(false)
-      XCTAssertEqual(outputs, [0, 1])
-      parentStore.send(false)
-      XCTAssertEqual(outputs, [0, 1])
-      parentStore.send(false)
-      XCTAssertEqual(outputs, [0, 1])
+  func testPublisherScope() {
+    let appReducer = Reducer<Int, Bool, Void> { state, action, _ in
+      state += action ? 1 : 0
+      return .none
     }
 
-    func testIfLetAfterScope() {
-      struct AppState {
-        var count: Int?
-      }
+    let parentStore = Store(initialState: 0, reducer: appReducer, environment: ())
 
-      let appReducer = Reducer<AppState, Int?, Void> { state, action, _ in
-        state.count = action
-        return .none
-      }
+    var outputs: [Int] = []
 
-      let parentStore = Store(initialState: AppState(), reducer: appReducer, environment: ())
+    parentStore
+      .scope { $0.distinctUntilChanged() }
+      .subscribe(onNext: {
+        outputs.append($0.state)
+      })
+      .disposed(by: disposeBag)
 
-      // NB: This test needs to hold a strong reference to the emitted stores
-      var outputs: [Int?] = []
-      var stores: [Any] = []
+    XCTAssertEqual(outputs, [0])
 
-      parentStore
-        .scope(state: \.count)
-        .ifLet(
-          then: { store in
-            stores.append(store)
-            outputs.append(store.state)
+    parentStore.send(true)
+    XCTAssertEqual(outputs, [0, 1])
+
+    parentStore.send(false)
+    XCTAssertEqual(outputs, [0, 1])
+    parentStore.send(false)
+    XCTAssertEqual(outputs, [0, 1])
+    parentStore.send(false)
+    XCTAssertEqual(outputs, [0, 1])
+    parentStore.send(false)
+    XCTAssertEqual(outputs, [0, 1])
+  }
+
+  func testIfLetAfterScope() {
+    struct AppState {
+      var count: Int?
+    }
+
+    let appReducer = Reducer<AppState, Int?, Void> { state, action, _ in
+      state.count = action
+      return .none
+    }
+
+    let parentStore = Store(initialState: AppState(), reducer: appReducer, environment: ())
+
+    // NB: This test needs to hold a strong reference to the emitted stores
+    var outputs: [Int?] = []
+    var stores: [Any] = []
+
+    parentStore
+      .scope(state: \.count)
+      .ifLet(
+        then: { store in
+          stores.append(store)
+          outputs.append(store.state)
         },
         else: {
-            outputs.append(nil)
-        })
-        .disposed(by: disposeBag)
-
-      XCTAssertEqual(outputs, [nil])
-
-      parentStore.send(1)
-      XCTAssertEqual(outputs, [nil, 1])
-
-      parentStore.send(nil)
-      XCTAssertEqual(outputs, [nil, 1, nil])
-
-      parentStore.send(1)
-      XCTAssertEqual(outputs, [nil, 1, nil, 1])
-
-      parentStore.send(nil)
-      XCTAssertEqual(outputs, [nil, 1, nil, 1, nil])
-
-      parentStore.send(1)
-      XCTAssertEqual(outputs, [nil, 1, nil, 1, nil, 1])
-
-      parentStore.send(nil)
-      XCTAssertEqual(outputs, [nil, 1, nil, 1, nil, 1, nil])
-    }
-
-    func testIfLetTwo() {
-      let parentStore = Store(
-        initialState: 0,
-        reducer: Reducer<Int?, Bool, Void> { state, action, _ in
-          if action {
-            state? += 1
-            return .none
-          } else {
-            return Effect(value: true)
-                .observeOn(MainScheduler.instance)
-                .eraseToEffect()
-          }
-        },
-        environment: ()
+          outputs.append(nil)
+        }
       )
-
-      parentStore.ifLet { childStore in
-        let vs = ViewStore(childStore)
-
-        vs
-          .publisher
-          .subscribe(onNext: { _ in })
-          .disposed(by: self.disposeBag)
-
-        vs.send(false)
-        _ = XCTWaiter.wait(for: [.init()], timeout: 0.1)
-        vs.send(false)
-        _ = XCTWaiter.wait(for: [.init()], timeout: 0.1)
-        vs.send(false)
-        _ = XCTWaiter.wait(for: [.init()], timeout: 0.1)
-        XCTAssertEqual(vs.state, 3)
-      }
       .disposed(by: disposeBag)
+
+    XCTAssertEqual(outputs, [nil])
+
+    parentStore.send(1)
+    XCTAssertEqual(outputs, [nil, 1])
+
+    parentStore.send(nil)
+    XCTAssertEqual(outputs, [nil, 1, nil])
+
+    parentStore.send(1)
+    XCTAssertEqual(outputs, [nil, 1, nil, 1])
+
+    parentStore.send(nil)
+    XCTAssertEqual(outputs, [nil, 1, nil, 1, nil])
+
+    parentStore.send(1)
+    XCTAssertEqual(outputs, [nil, 1, nil, 1, nil, 1])
+
+    parentStore.send(nil)
+    XCTAssertEqual(outputs, [nil, 1, nil, 1, nil, 1, nil])
+  }
+
+  func testIfLetTwo() {
+    let parentStore = Store(
+      initialState: 0,
+      reducer: Reducer<Int?, Bool, Void> { state, action, _ in
+        if action {
+          state? += 1
+          return .none
+        } else {
+          return Effect(value: true)
+            .observeOn(MainScheduler.instance)
+            .eraseToEffect()
+        }
+      },
+      environment: ()
+    )
+
+    parentStore.ifLet { childStore in
+      let vs = ViewStore(childStore)
+
+      vs
+        .publisher
+        .subscribe(onNext: { _ in })
+        .disposed(by: self.disposeBag)
+
+      vs.send(false)
+      _ = XCTWaiter.wait(for: [.init()], timeout: 0.1)
+      vs.send(false)
+      _ = XCTWaiter.wait(for: [.init()], timeout: 0.1)
+      vs.send(false)
+      _ = XCTWaiter.wait(for: [.init()], timeout: 0.1)
+      XCTAssertEqual(vs.state, 3)
     }
+    .disposed(by: disposeBag)
+  }
 }
