@@ -9,7 +9,7 @@
 /* Begin PBXBuildFile section */
 		7854FF92249318910094D8A8 /* UIKitCaseStudiesTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7854FF91249318910094D8A8 /* UIKitCaseStudiesTests.swift */; };
 		78634FE924930375006E231F /* RxCocoa in Frameworks */ = {isa = PBXBuildFile; productRef = 78634FE824930375006E231F /* RxCocoa */; };
-		78B64BD42492F5EC00A47CE0 /* ComposableArchitecture in Frameworks */ = {isa = PBXBuildFile; productRef = 78B64BD32492F5EC00A47CE0 /* ComposableArchitecture */; };
+		78BC6CA924D9BBCC0061AB2D /* ComposableArchitecture in Frameworks */ = {isa = PBXBuildFile; productRef = 78BC6CA824D9BBCC0061AB2D /* ComposableArchitecture */; };
 		DC25DC5F2450F13200082E81 /* IfLetStoreController.swift in Sources */ = {isa = PBXBuildFile; fileRef = DC25DC5E2450F13200082E81 /* IfLetStoreController.swift */; };
 		DC25DC612450F2B000082E81 /* LoadThenNavigate.swift in Sources */ = {isa = PBXBuildFile; fileRef = DC25DC602450F2B000082E81 /* LoadThenNavigate.swift */; };
 		DC25DC642450F2DF00082E81 /* ActivityIndicatorViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = DC25DC632450F2DF00082E81 /* ActivityIndicatorViewController.swift */; };
@@ -82,8 +82,8 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				78BC6CA924D9BBCC0061AB2D /* ComposableArchitecture in Frameworks */,
 				78634FE924930375006E231F /* RxCocoa in Frameworks */,
-				78B64BD42492F5EC00A47CE0 /* ComposableArchitecture in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -187,8 +187,8 @@
 			);
 			name = UIKitCaseStudies;
 			packageProductDependencies = (
-				78B64BD32492F5EC00A47CE0 /* ComposableArchitecture */,
 				78634FE824930375006E231F /* RxCocoa */,
+				78BC6CA824D9BBCC0061AB2D /* ComposableArchitecture */,
 			);
 			productName = UIKitCaseStudies;
 			productReference = DC4C6EA72450DD380066A05D /* UIKitCaseStudies.app */;
@@ -245,8 +245,8 @@
 			);
 			mainGroup = DC89C40A24460F95006900B9;
 			packageReferences = (
-				78B64BD22492F5EC00A47CE0 /* XCRemoteSwiftPackageReference "rx-swift-composable-architecture" */,
 				78634FE724930375006E231F /* XCRemoteSwiftPackageReference "RxSwift" */,
+				78BC6CA724D9BBCC0061AB2D /* XCRemoteSwiftPackageReference "rx-swift-composable-architecture" */,
 			);
 			productRefGroup = DC89C41424460F95006900B9 /* Products */;
 			projectDirPath = "";
@@ -560,12 +560,12 @@
 				minimumVersion = 5.1.1;
 			};
 		};
-		78B64BD22492F5EC00A47CE0 /* XCRemoteSwiftPackageReference "rx-swift-composable-architecture" */ = {
+		78BC6CA724D9BBCC0061AB2D /* XCRemoteSwiftPackageReference "rx-swift-composable-architecture" */ = {
 			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "git@github.com:dannyhertz/rx-swift-composable-architecture.git";
+			repositoryURL = "https://github.com/dannyhertz/rx-swift-composable-architecture.git";
 			requirement = {
 				kind = upToNextMajorVersion;
-				minimumVersion = 0.3.0;
+				minimumVersion = 0.6.0;
 			};
 		};
 /* End XCRemoteSwiftPackageReference section */
@@ -576,9 +576,9 @@
 			package = 78634FE724930375006E231F /* XCRemoteSwiftPackageReference "RxSwift" */;
 			productName = RxCocoa;
 		};
-		78B64BD32492F5EC00A47CE0 /* ComposableArchitecture */ = {
+		78BC6CA824D9BBCC0061AB2D /* ComposableArchitecture */ = {
 			isa = XCSwiftPackageProductDependency;
-			package = 78B64BD22492F5EC00A47CE0 /* XCRemoteSwiftPackageReference "rx-swift-composable-architecture" */;
+			package = 78BC6CA724D9BBCC0061AB2D /* XCRemoteSwiftPackageReference "rx-swift-composable-architecture" */;
 			productName = ComposableArchitecture;
 		};
 /* End XCSwiftPackageProductDependency section */
