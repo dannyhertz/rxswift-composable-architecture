@@ -43,17 +43,27 @@ extension Store {
     then unwrap: @escaping (Store<Wrapped, Action>) -> Void,
     else: @escaping () -> Void
   ) -> Disposable where State == Wrapped? {
-    self.scope(
-      state: { state in
-        return
-          state
-          .distinctUntilChanged({ ($0 != nil) == ($1 != nil) })
-          .do(onNext: { if $0 == nil { `else`() } })
-          .compactMap { $0 }
-      },
-      action: { $0 }
-    )
-    .subscribe(onNext: unwrap)
+
+    let elseDisposable = self
+      .scope(
+        state: { state in
+          state.distinctUntilChanged({ ($0 != nil) == ($1 != nil) })
+        }
+      )
+      .subscribe(onNext: { store in
+        if store.state == nil { `else`() }
+      })
+
+    let unwrapDisposable = self
+      .scope(
+        state: { state in
+          state.distinctUntilChanged({ ($0 != nil) == ($1 != nil) })
+            .compactMap { $0 }
+        }
+      )
+      .subscribe(onNext: unwrap)
+
+    return CompositeDisposable(elseDisposable, unwrapDisposable)
   }
 
   /// An overload of `ifLet(then:else:)` for the times that you do not want to handle the `else`
