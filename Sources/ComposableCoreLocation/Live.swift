@@ -34,7 +34,7 @@ extension LocationManager {
         )
 
         return Disposables.create {
-            dependencies[id] = nil
+          dependencies[id] = nil
         }
       }
     }
