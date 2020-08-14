@@ -19,7 +19,7 @@ struct EagerNavigationEnvironment {
 }
 
 let eagerNavigationReducer = counterReducer
-  .optional
+  .optional()
   .pullback(
     state: \.optionalCounter,
     action: /EagerNavigationAction.optionalCounter,

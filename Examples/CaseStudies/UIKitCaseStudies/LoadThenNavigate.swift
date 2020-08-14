@@ -19,7 +19,7 @@ struct LazyNavigationEnvironment {
 }
 
 let lazyNavigationReducer = counterReducer
-  .optional
+  .optional()
   .pullback(
     state: \.optionalCounter,
     action: /LazyNavigationAction.optionalCounter,
