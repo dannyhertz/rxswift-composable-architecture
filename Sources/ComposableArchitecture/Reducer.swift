@@ -164,8 +164,8 @@ public struct Reducer<State, Action, Environment> {
   /// - See also: `Store.ifLet`, a UIKit helper for doing imperative work with a store on optional
   ///   state.
   public func optional(_ file: StaticString = #file, _ line: UInt = #line) -> Reducer<
-      State?, Action, Environment
-    > {
+    State?, Action, Environment
+  > {
     .init { state, action, environment in
       guard state != nil else {
         assertionFailure(
@@ -185,8 +185,8 @@ public struct Reducer<State, Action, Environment> {
           this reducer can only be sent to a view store when state is non-"nil". In SwiftUI \
           applications, use "IfLetStore".
           """,
-        file: file,
-        line: line
+          file: file,
+          line: line
         )
         return .none
       }
@@ -253,8 +253,8 @@ public struct Reducer<State, Action, Environment> {
         To fix this make sure that actions for this reducer can only be sent to a view store when \
         its state contains an element at this index. In SwiftUI applications, use `ForEachStore`.
         """,
-       file: file,
-       line: line
+        file: file,
+        line: line
       )
       return self.reducer(
         &globalState[keyPath: toLocalState][index],
@@ -305,8 +305,8 @@ public struct Reducer<State, Action, Environment> {
         To fix this make sure that actions for this reducer can only be sent to a view store
         when its state contains an element at this key.
         """,
-       file: file,
-       line: line
+        file: file,
+        line: line
       )
       return self.reducer(
         &globalState[keyPath: toLocalState][key]!,

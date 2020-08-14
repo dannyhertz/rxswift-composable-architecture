@@ -48,6 +48,6 @@ let package = Package(
       dependencies: [
         "ComposableCoreLocation"
       ]
-    )
+    ),
   ]
 )
