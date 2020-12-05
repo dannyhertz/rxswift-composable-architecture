@@ -1,6 +1,6 @@
 Pod::Spec.new do |s|
   s.name             = 'ComposableArchitecture'
-  s.version          = '0.7.2'
+  s.version          = '0.7.3'
   s.summary          = 'A RxSwift fork of The Composable Architecture.'
 
   s.description      = <<-DESC
@@ -11,7 +11,7 @@ Point-Free’s The Composable Architecture uses Apple's Combine framework as the
   s.author           = { 'Sukhanov Evgeny' => 'sukhanovee@tutu.tech' }
   s.source           = { :git => 'git@github.com:tutu-ru-mobile/rxswift-composable-architecture.git', :tag => s.version.to_s }
 
-  s.ios.deployment_target = '12.0'
+  s.ios.deployment_target = '11.0'
   s.swift_version = '5.2'
   s.default_subspecs = 'Core'
 
