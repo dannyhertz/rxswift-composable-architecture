@@ -1,6 +1,6 @@
 Pod::Spec.new do |s|
   s.name             = 'ComposableArchitecture'
-  s.version          = '0.7.3'
+  s.version          = '0.7.4'
   s.summary          = 'A RxSwift fork of The Composable Architecture.'
 
   s.description      = <<-DESC
