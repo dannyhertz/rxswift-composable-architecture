@@ -17,7 +17,7 @@ let package = Package(
         )
     ],
     dependencies: [
-        .package(url: "https://github.com/pointfreeco/swift-case-paths", from: "0.1.1"),
+        .package(url: "https://github.com/tutu-ru-mobile/swift-case-paths", from: "0.1.2"),
         .package(url: "https://github.com/ReactiveX/RxSwift.git", from: "5.0.0"),
     ],
     targets: [
