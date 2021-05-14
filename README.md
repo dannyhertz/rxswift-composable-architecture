@@ -9,7 +9,7 @@
 
 ## RxSwift Caveats
 
-Due to the lack of typed errors in RxSwift (which are heavily relied upon in ReactiveSwift and Combine) we lose some safety in this port, and it is on the consumer to take extra precautions to ensure an error never makes its way into the `Store`. One way to achieve this is with the [Materialize](https://github.com/ReactiveX/RxSwift/blob/master/RxSwift/Observables/Materialize.swift) operator or several other [popular error handling techniques](http://dukhovich.net/rxswift/error-handling/). An `assertionFailure` has been added to the `Store` class in order to prevent errors from unintentionally propagating further. An `_XCTFail` has also been added to the `TestStore` to ensure errors thrown during testing are caught early on as well.
+Due to the lack of typed errors in RxSwift (which are heavily relied upon in ReactiveSwift and Combine) we lose some safety in this port, and it is on the consumer to take extra precautions to ensure an error never makes its way into the `Store`. One way to achieve this is with the [Materialize](https://github.com/ReactiveX/RxSwift/blob/master/RxSwift/Observables/Materialize.swift) operator or several other [popular error handling techniques](http://dukhovich.net/rxswift/error-handling/). An `assertionFailure` has been added to the `Store` class in order to prevent errors from unintentionally propagating further.
 
 ## TODOs
 

@@ -1,6 +1,7 @@
 #if DEBUG
   import RxSwift
   import Foundation
+  import XCTestDynamicOverlay
 
   /// A testable runtime for a reducer.
   ///
@@ -189,7 +190,7 @@
         effectDisposable = effect.subscribe(
           onNext: { receivedActions.append($0) },
           onError: { err in
-            _XCTFail("Error during effect handling: \(err.localizedDescription)")
+            XCTFail("Error during effect handling: \(err.localizedDescription)")
             cleanupDisposables()
           },
           onCompleted: cleanupDisposables,
@@ -207,7 +208,7 @@
         switch step.type {
         case let .send(action, update):
           if !receivedActions.isEmpty {
-            _XCTFail(
+            XCTFail(
               """
               Must handle \(receivedActions.count) received \
               action\(receivedActions.count == 1 ? "" : "s") before sending an action: …
@@ -222,7 +223,7 @@
 
         case let .receive(expectedAction, update):
           guard !receivedActions.isEmpty else {
-            _XCTFail(
+            XCTFail(
               """
               Expected to receive an action, but received none.
               """,
@@ -237,7 +238,7 @@
               debugDiff(expectedAction, receivedAction)
               .map { ": …\n\n\($0.indent(by: 4))\n\n(Expected: −, Actual: +)" }
               ?? ""
-            _XCTFail(
+            XCTFail(
               """
               Received unexpected action\(diff)
               """,
@@ -250,7 +251,7 @@
 
         case let .environment(work):
           if !receivedActions.isEmpty {
-            _XCTFail(
+            XCTFail(
               """
               Must handle \(receivedActions.count) received \
               action\(receivedActions.count == 1 ? "" : "s") before performing this work: …
@@ -270,7 +271,7 @@
             debugDiff(expectedState, actualState)
             .map { ": …\n\n\($0.indent(by: 4))\n\n(Expected: −, Actual: +)" }
             ?? ""
-          _XCTFail(
+          XCTFail(
             """
             State change does not match expectation\(diff)
             """,
@@ -281,7 +282,7 @@
       }
 
       if !receivedActions.isEmpty {
-        _XCTFail(
+        XCTFail(
           """
           Received \(receivedActions.count) unexpected \
           action\(receivedActions.count == 1 ? "" : "s"): …
@@ -293,7 +294,7 @@
         )
       }
       if effectDisposables.count != 0 {
-        _XCTFail(
+        XCTFail(
           """
           Some effects are still running. All effects must complete by the end of the assertion.
 
@@ -430,44 +431,4 @@
       }
     }
   }
-
-  // NB: Dynamically load XCTest to prevent leaking its symbols into our library code.
-  private func _XCTFail(_ message: String = "", file: StaticString = #file, line: UInt = #line) {
-    guard
-      let _XCTFailureHandler = _XCTFailureHandler,
-      let _XCTCurrentTestCase = _XCTCurrentTestCase
-    else {
-      assertionFailure(
-        """
-        Couldn't load XCTest. Are you using a test store in application code?"
-        """,
-        file: file,
-        line: line
-      )
-      return
-    }
-
-    _XCTFailureHandler(_XCTCurrentTestCase(), true, "\(file)", line, message, nil)
-  }
-
-  private typealias XCTCurrentTestCase = @convention(c) () -> AnyObject
-  private typealias XCTFailureHandler = @convention(c) (
-    AnyObject, Bool, UnsafePointer<CChar>, UInt, String, String?
-  ) -> Void
-
-  private let _XCTest = NSClassFromString("XCTest")
-    .flatMap(Bundle.init(for:))
-    .flatMap({ $0.executablePath })
-    .flatMap({ dlopen($0, RTLD_NOW) })
-
-  private let _XCTFailureHandler =
-    _XCTest
-    .flatMap { dlsym($0, "_XCTFailureHandler") }
-    .map({ unsafeBitCast($0, to: XCTFailureHandler.self) })
-
-  private let _XCTCurrentTestCase =
-    _XCTest
-    .flatMap { dlsym($0, "_XCTCurrentTestCase") }
-    .map({ unsafeBitCast($0, to: XCTCurrentTestCase.self) })
-
 #endif
