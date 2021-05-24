@@ -58,21 +58,23 @@ public final class ViewStore<State, Action> {
   ///   - store: A store.
   ///   - isDuplicate: A function to determine when two `State` values are equal. When values are
   ///     equal, repeat view computations are removed.
+  ///   - viewStateScheduler: If specified, the scheduler on which changes to the view state should run.
   public init(
     _ store: Store<State, Action>,
-    removeDuplicates isDuplicate: @escaping (State, State) -> Bool
+    removeDuplicates isDuplicate: @escaping (State, State) -> Bool,
+    viewStateScheduler: SchedulerType? = nil
   ) {
     let publisher = store.observable.distinctUntilChanged(isDuplicate)
-    self.publisher = StorePublisher(publisher)
+    self.publisher = StorePublisher(publisher, scheduler: viewStateScheduler)
     self.stateRelay = BehaviorRelay(value: store.state)
     self._send = store.send
     self.viewDisposable = publisher.subscribe(onNext: { [weak self] in self?.state = $0 })
   }
 
   /// The current state.
-  private var stateRelay: BehaviorRelay<State>
+  private let stateRelay: BehaviorRelay<State>
   public private(set) var state: State {
-    get { return stateRelay.value }
+    get { stateRelay.value }
     set { stateRelay.accept(newValue) }
   }
   var observable: Observable<State> {
