@@ -72,7 +72,7 @@ public struct Effect<Output>: ObservableType {
   ///
   /// For example, to create an effect that delivers an integer after waiting a second:
   ///
-  ///     Effect<Int, Never>.future { callback in
+  ///     Effect<Int>.future { callback in
   ///       DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
   ///         callback(.success(42))
   ///       }
@@ -81,7 +81,7 @@ public struct Effect<Output>: ObservableType {
   /// Note that you can only deliver a single value to the `callback`. If you send more they will be
   /// discarded:
   ///
-  ///     Effect<Int, Never>.future { callback in
+  ///     Effect<Int>.future { callback in
   ///       DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
   ///         callback(.success(42))
   ///         callback(.success(1729)) // Will not be emitted by the effect
@@ -92,7 +92,7 @@ public struct Effect<Output>: ObservableType {
   ///  initializer that accepts a `Subscriber` value.
   ///
   /// - Parameter attemptToFulfill: A closure that takes a `callback` as an argument which can be
-  ///   used to feed it `Result<Output, Failure>` values.
+  ///   used to feed it `Result<Output>` values.
   public static func future(
     _ attemptToFulfill: @escaping (@escaping (Result<Output, Error>) -> Void) -> Void
   ) -> Effect {
@@ -117,7 +117,7 @@ public struct Effect<Output>: ObservableType {
   ///
   /// For example, to load a user from some JSON on the disk, one can wrap that work in an effect:
   ///
-  ///     Effect<User, Error>.result {
+  ///     Effect<User>.result {
   ///       let fileUrl = URL(
   ///         fileURLWithPath: NSSearchPathForDirectoriesInDomains(
   ///           .documentDirectory, .userDomainMask, true
@@ -260,13 +260,38 @@ public struct Effect<Output>: ObservableType {
   }
 }
 
+extension Effect {
+  /// Initializes an effect that lazily executes some work in the real world and synchronously sends
+  /// that data back into the store.
+  ///
+  /// For example, to load a user from some JSON on the disk, one can wrap that work in an effect:
+  ///
+  ///     Effect<User>.catching {
+  ///       let fileUrl = URL(
+  ///         fileURLWithPath: NSSearchPathForDirectoriesInDomains(
+  ///           .documentDirectory, .userDomainMask, true
+  ///         )[0]
+  ///       )
+  ///       .appendingPathComponent("user.json")
+  ///
+  ///       let data = try Data(contentsOf: fileUrl)
+  ///       return try JSONDecoder().decode(User.self, from: $0)
+  ///     }
+  ///
+  /// - Parameter work: A closure encapsulating some work to execute in the real world.
+  /// - Returns: An effect.
+  public static func catching(_ work: @escaping () throws -> Output) -> Self {
+    .future { $0(Result { try work() }) }
+  }
+}
+
 extension Effect where Output == Never {
-  /// Upcasts an `Effect<Never, Failure>` to an `Effect<T, Failure>` for any type `T`. This is
-  /// possible to do because an `Effect<Never, Failure>` can never produce any values to feed back
+  /// Upcasts an `Effect<Never>` to an `Effect<T>` for any type `T`. This is
+  /// possible to do because an `Effect<Never>` can never produce any values to feed back
   /// into the store (hence the name "fire and forget"), and therefore we can act like it's an
   /// effect that produces values of any type (since it never produces values).
   ///
-  /// This is useful for times you have an `Effect<Never, Failure>` but need to massage it into
+  /// This is useful for times you have an `Effect<Never>` but need to massage it into
   /// another type in order to return it from a reducer:
   ///
   ///     case .buttonTapped:
