@@ -261,28 +261,28 @@ public struct Effect<Output>: ObservableType {
 }
 
 extension Effect {
-  /// Initializes an effect that lazily executes some work in the real world and synchronously sends
-  /// that data back into the store.
-  ///
-  /// For example, to load a user from some JSON on the disk, one can wrap that work in an effect:
-  ///
-  ///     Effect<User>.catching {
-  ///       let fileUrl = URL(
-  ///         fileURLWithPath: NSSearchPathForDirectoriesInDomains(
-  ///           .documentDirectory, .userDomainMask, true
-  ///         )[0]
-  ///       )
-  ///       .appendingPathComponent("user.json")
-  ///
-  ///       let data = try Data(contentsOf: fileUrl)
-  ///       return try JSONDecoder().decode(User.self, from: $0)
-  ///     }
-  ///
-  /// - Parameter work: A closure encapsulating some work to execute in the real world.
-  /// - Returns: An effect.
-  public static func catching(_ work: @escaping () throws -> Output) -> Self {
-    .future { $0(Result { try work() }) }
-  }
+    /// Initializes an effect that lazily executes some work in the real world and synchronously sends
+    /// that data back into the store.
+    ///
+    /// For example, to load a user from some JSON on the disk, one can wrap that work in an effect:
+    ///
+    ///     Effect<User>.catching {
+    ///       let fileUrl = URL(
+    ///         fileURLWithPath: NSSearchPathForDirectoriesInDomains(
+    ///           .documentDirectory, .userDomainMask, true
+    ///         )[0]
+    ///       )
+    ///       .appendingPathComponent("user.json")
+    ///
+    ///       let data = try Data(contentsOf: fileUrl)
+    ///       return try JSONDecoder().decode(User.self, from: $0)
+    ///     }
+    ///
+    /// - Parameter work: A closure encapsulating some work to execute in the real world.
+    /// - Returns: An effect.
+    public static func catching(_ work: @escaping () throws -> Output) -> Self {
+        .future { $0(Result { try work() }) }
+    }
 }
 
 extension Effect where Output == Never {
@@ -337,5 +337,45 @@ extension ObservableType {
     self.map(Result<Element, Error>.success)
       .catchError { Observable<Result<Element, Error>>.just(Result.failure($0)) }
       .eraseToEffect()
+  }
+
+  /// Turns any publisher into an `Effect` for any output and failure type by ignoring all output
+  /// and any failure.
+  ///
+  /// This is useful for times you want to fire off an effect but don't want to feed any data back
+  /// into the system. It can automatically promote an effect to your reducer's domain.
+  ///
+  ///     case .buttonTapped:
+  ///       return analyticsClient.track("Button Tapped")
+  ///         .fireAndForget()
+  ///
+  /// - Parameter outputType: An output type.
+  /// - Returns: An effect that never produces output or errors.
+  public func fireAndForget<NewOutput>(
+    outputType: NewOutput.Type = NewOutput.self
+  ) -> Effect<NewOutput> {
+    return
+      self
+      .flatMap { _ in Observable.never() }
+      .catchError { _ in Observable.never() }
+      .eraseToEffect()
+  }
+
+  public func bind<ViewState, ViewAction>(
+    _ action: ViewAction,
+    to store: ViewStore<ViewState, ViewAction>
+  ) -> Disposable where Element == Void {
+    return self
+      .map { action }
+      .subscribe(store)
+  }
+
+  public func bind<E, ViewState, ViewAction>(
+    _ action: @escaping (E) -> ViewAction,
+    to store: ViewStore<ViewState, ViewAction>
+  ) -> Disposable where Element == E {
+    return self
+      .map(action)
+      .subscribe(store)
   }
 }
