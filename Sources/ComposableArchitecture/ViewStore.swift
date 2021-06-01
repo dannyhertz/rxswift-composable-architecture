@@ -108,3 +108,10 @@ extension ViewStore where State: Equatable {
     self.init(store, removeDuplicates: ==)
   }
 }
+
+extension ViewStore: ObserverType {
+    public func on(_ event: Event<Action>) {
+        guard let action = event.element else { return }
+        send(action)
+    }
+}
