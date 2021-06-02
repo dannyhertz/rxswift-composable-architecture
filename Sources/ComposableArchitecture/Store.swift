@@ -14,6 +14,7 @@ public final class Store<State, Action> {
   private var parentDisposable: Disposable?
   var effectDisposables = CompositeDisposable()
   private let reducer: (inout State, Action) -> Effect<Action>
+  private let sendingQueue: DispatchQueue?
 
   private var stateRelay: BehaviorRelay<State>
   public private(set) var state: State {
@@ -38,11 +39,19 @@ public final class Store<State, Action> {
   public convenience init<Environment>(
     initialState: State,
     reducer: Reducer<State, Action, Environment>,
-    environment: Environment
+    environment: Environment,
+    sendingQueue: DispatchQueue? = nil
   ) {
+    let updatedReducer = sendingQueue
+      // The ConcurrentDispatchQueueScheduler respects the incoming queue's attributes,
+      // so if it is serial, events will still be observed serially.
+      // See ConcurrentDispatchQueueScheduler's documentation for more.
+      .map { reducer.receive(on: ConcurrentDispatchQueueScheduler(queue: $0)) }
+      ?? reducer
     self.init(
       initialState: initialState,
-      reducer: { reducer.run(&$0, $1, environment) }
+      reducer: { updatedReducer.run(&$0, $1, environment) },
+      sendingQueue: sendingQueue
     )
   }
 
@@ -56,15 +65,119 @@ public final class Store<State, Action> {
   ///     struct AppAction { case login(LoginAction), ... }
   ///
   ///     // A store that runs the entire application.
-  ///     let store = Store(initialState: AppState(), reducer: appReducer, environment: ())
+  ///     let store = Store(
+  ///       initialState: AppState(),
+  ///       reducer: appReducer,
+  ///       environment: AppEnvironment()
+  ///     )
   ///
   ///     // Construct a login view by scoping the store to one that works with only login domain.
-  ///     let loginView = LoginView(
+  ///     LoginView(
   ///       store: store.scope(
   ///         state: { $0.login },
   ///         action: { AppAction.login($0) }
   ///       )
   ///     )
+  ///
+  /// Scoping in this fashion allows you to better modularize your application. In this case,
+  /// `LoginView` could be extracted to a module that has no access to `AppState` or `AppAction`.
+  ///
+  /// Scoping also gives a view the opportunity to focus on just the state and actions it cares
+  /// about, even if its feature domain is larger.
+  ///
+  /// For example, the above login domain could model a two screen login flow: a login form followed
+  /// by a two-factor authentication screen. The second screen's domain might be nested in the
+  /// first:
+  ///
+  ///     struct LoginState: Equatable {
+  ///       var email = ""
+  ///       var password = ""
+  ///       var twoFactorAuth: TwoFactorAuthState?
+  ///     }
+  ///
+  ///     enum LoginAction: Equatable {
+  ///       case emailChanged(String)
+  ///       case loginButtonTapped
+  ///       case loginResponse(Result<TwoFactorAuthState, LoginError>)
+  ///       case passwordChanged(String)
+  ///       case twoFactorAuth(TwoFactorAuthAction)
+  ///     }
+  ///
+  /// The login view holds onto a store of this domain:
+  ///
+  ///     struct LoginView: View {
+  ///       let store: Store<LoginState, LoginAction>
+  ///
+  ///       var body: some View { ... }
+  ///     }
+  ///
+  /// If its body were to use a view store of the same domain, this would introduce a number of
+  /// problems:
+  ///
+  /// * The login view would be able to read from `twoFactorAuth` state. This state is only intended
+  ///   to be read from the two-factor auth screen.
+  ///
+  /// * Even worse, changes to `twoFactorAuth` state would now cause SwiftUI to recompute
+  ///   `LoginView`'s body unnecessarily.
+  ///
+  /// * The login view would be able to send `twoFactorAuth` actions. These actions are only
+  ///   intended to be sent from the two-factor auth screen (and reducer).
+  ///
+  /// * The login view would be able to send non user-facing login actions, like `loginResponse`.
+  ///   These actions are only intended to be used in the login reducer to feed the results of
+  ///   effects back into the store.
+  ///
+  /// To avoid these issues, one can introduce a view-specific domain that slices off the subset of
+  /// state and actions that a view cares about:
+  ///
+  ///     extension LoginView {
+  ///       struct State: Equatable {
+  ///         var email: String
+  ///         var password: String
+  ///       }
+  ///
+  ///       enum Action: Equatable {
+  ///         case emailChanged(String)
+  ///         case loginButtonTapped
+  ///         case passwordChanged(String)
+  ///       }
+  ///     }
+  ///
+  /// One can also introduce a couple helpers that transform feature state into view state and
+  /// transform view actions into feature actions.
+  ///
+  ///     extension LoginState {
+  ///       var view: LoginView.State {
+  ///         .init(email: self.email, password: self.password)
+  ///       }
+  ///     }
+  ///
+  ///     extension LoginView.Action {
+  ///       var feature: LoginAction {
+  ///         switch self {
+  ///         case let .emailChanged(email)
+  ///           return .emailChanged(email)
+  ///         case .loginButtonTapped:
+  ///           return .loginButtonTapped
+  ///         case let .passwordChanged(password)
+  ///           return .passwordChanged(password)
+  ///         }
+  ///       }
+  ///     }
+  ///
+  /// With these helpers defined, `LoginView` can now scope its store's feature domain into its view
+  /// domain:
+  ///
+  ///     var body: some View {
+  ///       WithViewStore(
+  ///         self.store.scope(state: { $0.view }, action: { $0.feature })
+  ///       ) { viewStore in
+  ///         ...
+  ///       }
+  ///     }
+  ///
+  /// This view store is now incapable of reading any state but view state (and will not recompute
+  /// when non-view state changes), and is incapable of sending any actions but view actions.
   ///
   /// - Parameters:
   ///   - toLocalState: A function that transforms `State` into `LocalState`.
@@ -80,11 +193,15 @@ public final class Store<State, Action> {
         self.send(fromLocalAction(localAction))
         localState = toLocalState(self.state)
         return .none
-      }
+      },
+      sendingQueue: sendingQueue
     )
+
     localStore.parentDisposable = self.observable
-      .subscribe(onNext: { [weak localStore] newValue in localStore?.state = toLocalState(newValue)
+      .subscribe(onNext: { [weak localStore] newValue in
+        localStore?.state = toLocalState(newValue)
       })
+
     return localStore
   }
 
@@ -105,14 +222,16 @@ public final class Store<State, Action> {
   ///     `LocalState`.
   ///   - fromLocalAction: A function that transforms `LocalAction` into `Action`.
   /// - Returns: A publisher of stores with its domain (state and action) transformed.
-  public func scope<LocalState, LocalAction>(
-    state toLocalState: @escaping (Observable<State>) -> Observable<LocalState>,
+  public func scope<O: ObservableType, LocalState, LocalAction>(
+    state toLocalState: @escaping (Observable<State>) -> O,
     action fromLocalAction: @escaping (LocalAction) -> Action
-  ) -> Observable<Store<LocalState, LocalAction>> {
+  ) -> Observable<Store<LocalState, LocalAction>>
+  where O.Element == LocalState {
 
     func extractLocalState(_ state: State) -> LocalState? {
       var localState: LocalState?
-      _ = toLocalState(Observable.just(state)).subscribe(onNext: { localState = $0 })
+      _ = toLocalState(Observable.just(state))
+        .subscribe(onNext: { localState = $0 })
       return localState
     }
 
@@ -124,7 +243,9 @@ public final class Store<State, Action> {
             self.send(fromLocalAction(localAction))
             localState = extractLocalState(self.state) ?? localState
             return .none
-          })
+          },
+          sendingQueue: self.sendingQueue
+        )
 
         localStore.parentDisposable = self.observable
           .subscribe(onNext: { [weak localStore] state in
@@ -142,13 +263,22 @@ public final class Store<State, Action> {
   ///   of `LocalState`.
   /// - Returns: A publisher of stores with its domain (state and action)
   ///   transformed.
-  public func scope<LocalState>(
-    state toLocalState: @escaping (Observable<State>) -> Observable<LocalState>
-  ) -> Observable<Store<LocalState, Action>> {
+  public func scope<O: ObservableType, LocalState>(
+    state toLocalState: @escaping (Observable<State>) -> O
+  ) -> Observable<Store<LocalState, Action>>
+  where O.Element == LocalState {
     self.scope(state: toLocalState, action: { $0 })
   }
 
-  func send(_ action: Action) {
+  public func send(_ action: Action) {
+    if let queue = sendingQueue {
+      queue.async { self._send(action) }
+    } else {
+      _send(action)
+    }
+  }
+
+  private func _send(_ action: Action) {
     self.synchronousActionsToSend.append(action)
 
     while !self.synchronousActionsToSend.isEmpty {
@@ -223,11 +353,12 @@ public final class Store<State, Action> {
 
   private init(
     initialState: State,
-    reducer: @escaping (inout State, Action) -> Effect<Action>
+    reducer: @escaping (inout State, Action) -> Effect<Action>,
+    sendingQueue: DispatchQueue?
   ) {
-    self.stateRelay = BehaviorRelay(value: initialState)
     self.reducer = reducer
-    self.state = initialState
+    self.stateRelay = BehaviorRelay(value: initialState)
+    self.sendingQueue = sendingQueue
   }
 }
 
@@ -236,14 +367,16 @@ public final class Store<State, Action> {
 public struct StorePublisher<State>: ObservableType {
   public typealias Element = State
   public let upstream: Observable<State>
+  let scheduler: SchedulerType?
 
   public func subscribe<Observer>(_ observer: Observer) -> Disposable
-  where Observer: ObserverType, Element == Observer.Element {
-    upstream.subscribe(observer)
+  where Observer: ObserverType, Self.Element == Observer.Element {
+    upstream.observeOn(optional: scheduler).subscribe(observer)
   }
 
-  init(_ upstream: Observable<State>) {
+  init(_ upstream: Observable<State>, scheduler: SchedulerType? = nil) {
     self.upstream = upstream
+    self.scheduler = scheduler
   }
 
   /// Returns the resulting publisher of a given key path.
@@ -251,6 +384,9 @@ public struct StorePublisher<State>: ObservableType {
     dynamicMember keyPath: KeyPath<State, LocalState>
   ) -> StorePublisher<LocalState>
   where LocalState: Equatable {
-    .init(self.upstream.map { $0[keyPath: keyPath] }.distinctUntilChanged())
+    .init(
+      self.upstream.map { $0[keyPath: keyPath] }.distinctUntilChanged(),
+      scheduler: scheduler
+    )
   }
 }

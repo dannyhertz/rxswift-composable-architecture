@@ -1,6 +1,6 @@
 Pod::Spec.new do |s|
   s.name             = 'ComposableArchitecture'
-  s.version          = '0.8.0'
+  s.version          = '0.8.1'
   s.summary          = 'A RxSwift fork of The Composable Architecture.'
 
   s.description      = <<-DESC
@@ -8,7 +8,7 @@ Point-Free’s The Composable Architecture uses Apple's Combine framework as the
                        DESC
 
   s.homepage         = 'https://github.com/dannyhertz/rxswift-composable-architecture'
-  s.author           = { 'Danny Hertz' => 'me@dannyhertz.com' }
+  s.author           = { 'Danny Hertz' => 'me@dannyhertz.com', 'David Cairns' => 'dcairns@butterflynetinc.com' }
   s.source           = { :git => 'https://github.com/dannyhertz/rxswift-composable-architecture.git', :tag => s.version.to_s }
   s.license          = { :type => 'MIT' }
 

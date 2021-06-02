@@ -53,7 +53,7 @@
   ///     }
   ///     struct SearchEnvironment {
   ///       var mainQueue: AnySchedulerOf<DispatchQueue>
-  ///       var request: (String) -> Effect<[String], Never>
+  ///       var request: (String) -> Effect<[String]>
   ///     }
   ///     let searchReducer = Reducer<
   ///       SearchState, SearchAction, SearchEnvironment
