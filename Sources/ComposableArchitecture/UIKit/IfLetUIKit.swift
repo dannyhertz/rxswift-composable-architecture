@@ -118,7 +118,7 @@ extension Store {
   ///   - else: A function that is called whenever the store's optional state goes from non-`nil` to
   ///     `nil`.
   /// - Returns: A cancellable associated with the underlying subscription.
-  func ifLet<Wrapped>(
+  public func ifLet<Wrapped>(
     then unwrap: @escaping (Store<Wrapped, Action>) -> Void,
     else: @escaping () -> Void = {},
     onDisposed: @escaping () -> Void = {}
