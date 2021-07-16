@@ -37,6 +37,6 @@ extension Effect where Output: RxAbstractInteger {
       Observable
       .interval(interval, scheduler: scheduler)
       .eraseToEffect()
-      .cancellable(id: id)
+      .cancellable(id: id, cancelInFlight: true)
   }
 }
