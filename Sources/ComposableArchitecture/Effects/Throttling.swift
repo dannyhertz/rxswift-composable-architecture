@@ -3,7 +3,7 @@ import Foundation
 import RxSwift
 
 extension Effect {
-  /// Turns an effect into one that can be throttled.
+  /// Throttles an effect so that it only publishes one output per given interval.
   ///
   /// - Parameters:
   ///   - id: The effect's identifier.
@@ -27,23 +27,27 @@ extension Effect {
         return Observable.just(value)
       }
 
-      guard
-        scheduler.now.timeIntervalSince1970 - throttleTime.timeIntervalSince1970
-          < interval.timeInterval
-      else {
+      let value = latest ? value : (throttleValues[id] as! Output? ?? value)
+      throttleValues[id] = value
+
+      guard throttleTime.distance(to: scheduler.now) < interval.timeInterval else {
         throttleTimes[id] = scheduler.now
         throttleValues[id] = nil
         return Observable.just(value)
       }
 
-      let value = latest ? value : (throttleValues[id] as! Output? ?? value)
-      throttleValues[id] = value
-
       return Observable.just(value)
         .delay(
           .seconds(
-            throttleTime.addingTimeInterval(interval.timeInterval).timeIntervalSince1970
-              - scheduler.now.timeIntervalSince1970), scheduler: scheduler)
+            throttleTime
+              .addingTimeInterval(interval.timeInterval)
+              .timeIntervalSince1970 - scheduler.now.timeIntervalSince1970
+          ),
+          scheduler: scheduler
+        )
+        .do(onNext: { _ in
+          throttleTimes[id] = scheduler.now
+        })
     }
     .eraseToEffect()
     .cancellable(id: id, cancelInFlight: true)
