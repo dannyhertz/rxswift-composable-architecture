@@ -285,26 +285,6 @@ extension Effect {
     }
 }
 
-extension Effect where Output == Never {
-  /// Upcasts an `Effect<Never>` to an `Effect<T>` for any type `T`. This is
-  /// possible to do because an `Effect<Never>` can never produce any values to feed back
-  /// into the store (hence the name "fire and forget"), and therefore we can act like it's an
-  /// effect that produces values of any type (since it never produces values).
-  ///
-  /// This is useful for times you have an `Effect<Never>` but need to massage it into
-  /// another type in order to return it from a reducer:
-  ///
-  ///     case .buttonTapped:
-  ///       return analyticsClient.track("Button Tapped")
-  ///         .fireAndForget()
-  ///
-  /// - Returns: An effect.
-  public func fireAndForget<T>() -> Effect<T> {
-    func absurd<A>(_ never: Never) -> A {}
-    return self.map(absurd)
-  }
-}
-
 extension ObservableType {
   /// Turns any publisher into an `Effect`.
   ///
@@ -356,8 +336,8 @@ extension ObservableType {
   ) -> Effect<NewOutput> {
     return
       self
-      .flatMap { _ in Observable.never() }
-      .catchError { _ in Observable.never() }
+      .flatMap { _ in Observable.empty() }
+      .catchError { _ in Observable.empty() }
       .eraseToEffect()
   }
 

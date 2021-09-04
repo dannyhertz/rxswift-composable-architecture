@@ -155,4 +155,20 @@ final class EffectTests: XCTestCase {
     XCTAssertEqual(values, [1])
     XCTAssertEqual(isComplete, true)
   }
+
+    func testFireAndForgetCompletes() {
+        // Adding this test to guard against a bug, where our version of .fireAndForget
+        // was not completing (downstream error: effects do not complete in TestStore unit tests).
+        let basicEffect = Effect(value: true)
+        let fireAndForget = basicEffect.fireAndForget(outputType: Void.self)
+
+        var isCompletedFired = false
+        fireAndForget.subscribe(
+            onCompleted: { isCompletedFired = true }
+        )
+        .disposed(by: disposeBag)
+
+        XCTAssertTrue(isCompletedFired)
+    }
+
 }
