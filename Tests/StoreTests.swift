@@ -326,7 +326,7 @@ final class StoreTests: XCTestCase {
           return .none
         } else {
           return Effect(value: true)
-            .observeOn(MainScheduler.instance)
+            .observe(on: MainScheduler.instance)
             .eraseToEffect()
         }
       },

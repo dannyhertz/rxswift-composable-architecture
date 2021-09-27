@@ -125,7 +125,7 @@ final class ComposableArchitectureTests: XCTestCase {
       case .incr:
         state += 1
         return environment.fetch(state)
-          .observeOn(environment.mainQueue)
+          .observe(on: environment.mainQueue)
           .map(Action.response)
           .eraseToEffect()
           .cancellable(id: CancelId())
