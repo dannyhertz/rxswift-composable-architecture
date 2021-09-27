@@ -1,6 +1,6 @@
 Pod::Spec.new do |s|
   s.name             = 'ComposableArchitecture'
-  s.version          = '0.7.4'
+  s.version          = '0.7.5'
   s.summary          = 'A RxSwift fork of The Composable Architecture.'
 
   s.description      = <<-DESC
@@ -25,7 +25,7 @@ Point-Free’s The Composable Architecture uses Apple's Combine framework as the
 
     core.dependency 'CasePaths'
     core.dependency 'Overture'
-    core.dependency 'RxSwift', '~> 5.1.1'
+    core.dependency 'RxSwift'
     core.dependency 'RxRelay'
   end
 
