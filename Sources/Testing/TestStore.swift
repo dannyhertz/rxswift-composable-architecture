@@ -171,7 +171,7 @@
       line: UInt = #line
     ) {
       var receivedActions: [Action] = []
-      var effectDisposables = CompositeDisposable()
+      let effectDisposables = CompositeDisposable()
 
       func runReducer(action: Action) {
         let effect = reducer.callAsFunction(&self.state, action, self.environment)
