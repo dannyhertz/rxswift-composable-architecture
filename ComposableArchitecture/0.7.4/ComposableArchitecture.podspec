@@ -1,6 +1,6 @@
 Pod::Spec.new do |s|
-  s.name             = 'TutuComposableArchitecture'
-  s.version          = '0.7.7'
+  s.name             = 'ComposableArchitecture'
+  s.version          = '0.7.4'
   s.summary          = 'A RxSwift fork of The Composable Architecture.'
 
   s.description      = <<-DESC
@@ -11,8 +11,8 @@ Point-Free’s The Composable Architecture uses Apple's Combine framework as the
   s.author           = { 'Sukhanov Evgeny' => 'sukhanovee@tutu.tech' }
   s.source           = { :git => 'git@github.com:tutu-ru-mobile/rxswift-composable-architecture.git', :tag => s.version.to_s }
 
-  s.ios.deployment_target = '12.1'
-  s.swift_version = '5.4'
+  s.ios.deployment_target = '11.0'
+  s.swift_version = '5.2'
   s.default_subspecs = 'Core'
 
   s.subspec 'Core' do |core|
@@ -25,7 +25,7 @@ Point-Free’s The Composable Architecture uses Apple's Combine framework as the
 
     core.dependency 'CasePaths'
     core.dependency 'Overture'
-    core.dependency 'RxSwift'
+    core.dependency 'RxSwift', '~> 5.1.1'
     core.dependency 'RxRelay'
   end
 
