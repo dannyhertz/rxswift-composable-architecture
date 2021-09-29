@@ -1,6 +1,6 @@
 Pod::Spec.new do |s|
-  s.name             = 'TutuComposableArchitecture'
-  s.version          = '0.7.7'
+  s.name             = 'ComposableArchitecture'
+  s.version          = '0.7.6'
   s.summary          = 'A RxSwift fork of The Composable Architecture.'
 
   s.description      = <<-DESC
